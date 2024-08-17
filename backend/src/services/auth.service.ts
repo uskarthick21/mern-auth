@@ -35,9 +35,11 @@ export const createAccount = async (data: CreateAccountParams) => {
         password: data.password,
     })
 
+    const userId = user._id
+
     // create verification code
     const verificationCode = await VerificationCodeModel.create({
-        userId: user._id,
+        userId,
         type: VerificationCodeType.EmailVerification,
         expiresAt: oneYearFromNow()
     })
@@ -46,7 +48,7 @@ export const createAccount = async (data: CreateAccountParams) => {
 
     // create session
     const session = await SessionModel.create({
-        userId: user._id,
+        userId,
         userAgent: data.userAgent
     });
 
@@ -68,7 +70,7 @@ export const createAccount = async (data: CreateAccountParams) => {
     // });
 
     const accessToken = signToken({
-        userId: user._id,
+        userId,
         sessionId: session._id
     })
 
