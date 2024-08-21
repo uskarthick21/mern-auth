@@ -2,6 +2,7 @@ import { ErrorRequestHandler, Response } from "express";
 import { BAD_REQUEST, INTERNAL_SERVER_ERROR } from "../constants/http";
 import { z } from "zod";
 import AppError from "../utils/AppError";
+import { clearAuthCookies, REFRESH_PATH } from "../utils/cookies";
 
 
 const handleZodError = (res: Response, error: z.ZodError) => {
@@ -30,6 +31,14 @@ const errorHandler: ErrorRequestHandler = (error, req, res, next) => {
 // message approtie
 
     console.log(`PATH: ${req.path}`, error);
+
+    // just clear the cookies if error refresh tooken or acceidently remove session form DB or any error occur while calling this REFRESH_PATH
+    // edge case checking - video: 2.07.00
+    // https://www.youtube.com/watch?v=NR2MJk9C1Js&t=6615s
+    
+    if(req.path === REFRESH_PATH ){
+        clearAuthCookies(res)
+    }
 
     if(error instanceof z.ZodError) {
         return handleZodError(res, error);

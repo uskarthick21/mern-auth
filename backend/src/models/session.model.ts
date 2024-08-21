@@ -5,7 +5,7 @@ export interface SessionDocument extends mongoose.Document {
     userId: mongoose.Types.ObjectId;
     userAgent?: string;
     createdAt: Date;
-    exipresAt: Date;
+    expiresAt: Date;
 }
 
 const sessionSchema = new mongoose.Schema<SessionDocument>({
@@ -16,7 +16,7 @@ const sessionSchema = new mongoose.Schema<SessionDocument>({
     },
     userAgent: {type: String},
     createdAt: {type: Date, required: true, default: Date.now},
-    exipresAt: {type: Date, default: thirtyDaysFromNow}
+    expiresAt: {type: Date, default: thirtyDaysFromNow}
 });
 
 const SessionModel = mongoose.model<SessionDocument>("Session", sessionSchema);

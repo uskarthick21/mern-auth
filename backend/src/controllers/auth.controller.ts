@@ -1,9 +1,12 @@
 import {z} from "zod";
 import catchErrors from "../utils/catchErrors";
-import { createAccount, loginUser } from "../services/auth.service";
-import { setAuthCookies } from "../utils/cookies";
-import { CREATED, OK } from "../constants/http";
-import { loginSchema, registerSchema } from "./auth.schemas";
+import { createAccount, loginUser, refreshUserAccessToken, verifyEmail } from "../services/auth.service";
+import { clearAuthCookies, getRefreshTokenCookieOptions, setAuthCookies } from "../utils/cookies";
+import { CREATED, OK, UNAUTHORIZED } from "../constants/http";
+import { loginSchema, registerSchema, verificationCodeSchema } from "./auth.schemas";
+import { verifyToken } from "../utils/jwt";
+import SessionModel from "../models/session.model";
+import appAssert from "../utils/appAssert";
 
 
 export const registerHandler = catchErrors(async(req, res) => {
@@ -37,5 +40,48 @@ export const loginHandler = catchErrors(async(req, res) => {
         res, accessToken, refreshToken
     }).status(OK).json({
         message: "Login successful"
+    });
+})
+
+export const logoutHandler = catchErrors(async (req, res) => {
+    const accessToken = req.cookies.accessToken as string|undefined;
+    const {payload} = verifyToken(accessToken || "");
+
+    if(payload) {
+        await SessionModel.findByIdAndDelete(payload.sessionId);
+    }
+
+    return clearAuthCookies(res).status(OK).json({
+        message: "Logout successful"
+    })
+})
+
+export const refreshHandler = catchErrors(async(req, res) => {
+
+console.log("REFRESH TOKEN IS CALLING")
+
+    const refreshToken = req.cookies.refreshToken as string|undefined;
+    appAssert(refreshToken, UNAUTHORIZED, "Missing refresh token");
+
+    const {accessToken, newRefreshToken} = await refreshUserAccessToken(refreshToken);
+
+    if(newRefreshToken) {
+        res.cookie("refreshToken", newRefreshToken, getRefreshTokenCookieOptions());
+    }
+
+    return res.status(OK).cookie("accessToken", accessToken, getRefreshTokenCookieOptions()).json({
+        message: "Access token refreshed"
+    })
+
+})
+
+export const verifyEmailHandler = catchErrors(async (req,res) => {
+    const verficationCode = verificationCodeSchema.parse(req.params.code);
+
+    const {user} = await verifyEmail(verficationCode);
+
+    return res.status(OK).json({
+        user: user,
+        message: "Email was verified"
     });
 })
