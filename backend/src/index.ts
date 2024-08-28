@@ -8,6 +8,8 @@ import errorHandler from "./middleware/errorHandler";
 import catchErrors from "./utils/catchErrors";
 import { OK } from "./constants/http";
 import authRoutes from "./routes/auth.route";
+import authenticate from "./middleware/authenticate";
+import userRoutes from "./routes/user.route";
 
 const app = express();
 
@@ -27,7 +29,13 @@ app.get("/", (req, res, next) => {
     })
 })
 
-app.use("/auth", authRoutes)
+// auth routes
+app.use("/auth", authRoutes);
+
+// protected routes
+// we create middleware called authenticate and authenticate the route for user and return the userid along with response.
+app.use("/user", authenticate, userRoutes);
+app.use("/sessions", authenticate, sessionRoutes);
 
 app.use(errorHandler);
 
