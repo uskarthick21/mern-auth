@@ -10,6 +10,7 @@ import { OK } from "./constants/http";
 import authRoutes from "./routes/auth.route";
 import authenticate from "./middleware/authenticate";
 import userRoutes from "./routes/user.route";
+import sessionRoutes from "./routes/session.route";
 
 const app = express();
 
