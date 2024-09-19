@@ -222,7 +222,9 @@ export const verifyEmail = async(code: string) => {
 }
 
 export const sendPasswordResetEmail = async (email: string) => {
-
+  // Catch any errors that were thrown and log them (but always return a success)
+  // This will prevent leaking sensitive data back to the client (e.g. user not found, email not sent).
+  try {
     // get the user by email
     const user = await UserModel.findOne({email});
     appAssert(user, NOT_FOUND, "User not found");
@@ -258,6 +260,10 @@ export const sendPasswordResetEmail = async (email: string) => {
         url, 
         emailId: data.id
     }
+} catch (error: any) {
+    console.log("SendPasswordResetError:", error.message);
+    return {};
+  }
 }
 
 type ResetPasswordParams = {
