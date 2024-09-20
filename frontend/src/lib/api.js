@@ -9,3 +9,6 @@ export const verifyEmail = async (verificationCode) =>
 
 export const sendPasswordResetEmail = async (email) =>
     API.post("/auth/password/forgot", { email });
+
+export const resetPassword = async ({ verificationCode, password }) =>
+    API.post("/auth/password/reset", { verificationCode, password });
