@@ -16,3 +16,6 @@ export const resetPassword = async ({ verificationCode, password }) =>
     API.post("/auth/password/reset", { verificationCode, password });
 
 export const getUser = async () => API.get("/user");
+
+export const getSessions = async () => API.get("/sessions");
+export const deleteSession = async (id) => API.delete(`/sessions/${id}`);
