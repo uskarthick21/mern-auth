@@ -1,7 +1,7 @@
 import {z} from "zod";
 import catchErrors from "../utils/catchErrors";
 import { createAccount, loginUser, refreshUserAccessToken, resetPassword, sendPasswordResetEmail, verifyEmail } from "../services/auth.service";
-import { clearAuthCookies, getRefreshTokenCookieOptions, setAuthCookies } from "../utils/cookies";
+import { clearAuthCookies, getAccessTokenCookieOptions, getRefreshTokenCookieOptions, setAuthCookies } from "../utils/cookies";
 import { CREATED, OK, UNAUTHORIZED } from "../constants/http";
 import { emailSchema, loginSchema, passwordSchema, registerSchema, resetPasswordSchema, verificationCodeSchema } from "./auth.schemas";
 import { verifyToken } from "../utils/jwt";
@@ -69,7 +69,7 @@ console.log("REFRESH TOKEN IS CALLING")
         res.cookie("refreshToken", newRefreshToken, getRefreshTokenCookieOptions());
     }
 
-    return res.status(OK).cookie("accessToken", accessToken, getRefreshTokenCookieOptions()).json({
+    return res.status(OK).cookie("accessToken", accessToken, getAccessTokenCookieOptions()).json({
         message: "Access token refreshed"
     })
 

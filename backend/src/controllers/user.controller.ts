@@ -1,5 +1,5 @@
 import { NOT_FOUND, OK } from "../constants/http";
-import UserModel from "../models/user.models";
+import UserModel from "../models/user.model";
 import appAssert from "../utils/appAssert";
 import catchErrors from "../utils/catchErrors";
 
